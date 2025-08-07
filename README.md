@@ -20,6 +20,9 @@ Everything is containerized with Docker for a clean, reproducible setup. This is
 ✨ **Contributions are welcome!**  
 Feel free to **fork the repo** and submit a **pull request** if you'd like to collaborate or enhance the project further. 
 
+<img width="1286" height="1253" alt="image" src="https://github.com/user-attachments/assets/b6d6ea10-224c-457b-9ece-dea48313dd26" />
+
+
 
 ## Features
 
