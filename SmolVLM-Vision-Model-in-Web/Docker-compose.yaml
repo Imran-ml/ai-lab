@@ -1,0 +1,37 @@
+services:
+  llama-cpp:
+    image: ghcr.io/ggerganov/llama.cpp:server
+    container_name: llama-cpp-server
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./models:/models
+    # Command to run the server
+    command: >
+      -m /models/SmolVLM-500M-Instruct-f16.gguf
+      --host 0.0.0.0
+      --port 8080
+      --mmproj /models/mmproj-SmolVLM-500M-Instruct-f16.gguf
+      -ngl 99
+    restart: unless-stopped
+
+  api-service:
+    build: ./api-src
+    container_name: fastapi-proxy-server
+    ports:
+      - "8000:8000"
+    environment:
+      - LLAMA_CPP_URL=http://llama-cpp:8080/v1/chat/completions
+    depends_on:
+      - llama-cpp
+    restart: unless-stopped
+
+volumes:
+  models:

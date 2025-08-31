@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Vision Stream</title>
+    <style>
+        
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+        :root {
+            --bg-gradient: linear-gradient(135deg, #e0f2f7, #c1e4ed); 
+            --card-bg: rgba(255, 255, 255, 0.7); 
+            --border-color: rgba(0, 0, 0, 0.1);
+            --text-primary: #333;
+            --text-secondary: #666;
+            --accent-glow: 0 0 15px rgba(100, 181, 246, 0.5); 
+            --accent-color: #64b5f6;
+            --start-bg: #4caf50; 
+            --stop-bg: #f44336; 
+            --font-family: 'Inter', sans-serif;
+            --input-bg: rgba(255, 255, 255, 0.8); 
+            --input-border-focus: #90caf9;
+        }
+
+        body {
+            font-family: var(--font-family);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: var(--bg-gradient);
+            color: var(--text-primary);
+            padding: 1rem;
+            box-sizing: border-box;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 1200px; 
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: clamp(1rem, 5vw, 2rem);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1); 
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        header {
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: clamp(1.5rem, 6vw, 2rem);
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        header p {
+            margin: 0.25rem 0 0;
+            color: var(--text-secondary);
+            font-size: clamp(0.8rem, 3vw, 0.9rem);
+        }
+        .main-content {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap; 
+        }
+
+        .video-container {
+            flex: 2; 
+            min-width: 500px; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 12px;
+            background-color: #eee; 
+            max-height: 1000px;
+        }
+
+        #videoFeed {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; 
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            box-shadow: var(--accent-glow);
+        }
+
+        .interaction-panel {
+            flex: 1; 
+            min-width: 250px; 
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .prompt-box, .response-box {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        textarea, select {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: var(--font-family);
+            background-color: var(--input-bg);
+            color: var(--text-primary);
+            transition: all 0.2s ease-in-out;
+            resize: vertical;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+        }
+
+        textarea::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.7;
+        }
+
+        textarea:focus, select:focus {
+            border-color: var(--input-border-focus);
+            outline: 0;
+            box-shadow: 0 0 0 3px rgba(144, 202, 249, 0.4);
+        }
+        
+        #instructionText { min-height: 60px; }
+        #responseText { min-height: 80px; background-color: rgba(255, 255, 255, 0.9); } 
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding-top: 1.5rem;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        select {
+            padding-right: 2rem;
+            -webkit-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23666666' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.5rem center;
+            background-size: 1em;
+        }
+
+        #startButton {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            flex-grow: 1;
+            max-width: 250px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        #startButton.start {
+            background: var(--start-bg);
+        }
+
+        #startButton.start:hover {
+            background: #43a047;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+
+        #startButton.stop {
+            background: var(--stop-bg);
+        }
+
+        #startButton.stop:hover {
+            background: #e53935;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+
+    
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column; 
+            }
+            .video-container, .interaction-panel {
+                flex: none; 
+                width: 100%;
+            }
+            #videoFeed {
+                max-height: 300px; 
+            }
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .control-group {
+                width: 100%;
+                justify-content: space-between;
+            }
+            #startButton {
+                width: 100%;
+                max-width: none;
+            }
+        }
+
+    
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>AI Vision Stream</h1>
+            <p>Live analysis from your camera feed</p>
+        </header>
+
+        <main class="main-content">
+            <div class="video-container">
+                <video id="videoFeed" autoplay playsinline></video>
+                <canvas id="canvas" class="hidden"></canvas>
+            </div>
+
+            <div class="interaction-panel">
+                <div class="prompt-box">
+                    <label for="instructionText">Instruction Prompt</label>
+                    <textarea id="instructionText" rows="3" placeholder="e.g., 'What color is the object in the center? Describe it briefly.'"></textarea>
+                </div>
+                <div class="response-box">
+                    <label for="responseText">Live Response <span id="speakerIcon" class="hidden" style="margin-left: 8px;">🔊</span></label>
+                    <textarea id="responseText" rows="4" readonly placeholder="The AI's response will appear here..."></textarea>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <div class="controls">
+                <div class="control-group">
+                    <label for="intervalSelect">Frequency:</label>
+                    <select id="intervalSelect">
+                        <option value="100">100ms</option>
+                        <option value="200">200ms</option>
+                        <option value="1000">1s</option>
+                        <option value="2000">2s</option>
+                        <option value="3000">3s</option>
+                        <option value="4000">4s</option>
+                        <option value="5000">5s</option>
+                    </select>
+                </div>
+                <button id="startButton" class="start">Activate Vision</button>
+            </div>
+        </footer>
+
+        <input id="backendURL" value="/process_frame" type="hidden">
+    </div>
+
+    <script>
+        const video = document.getElementById('videoFeed');
+        const canvas = document.getElementById('canvas');
+        const backendURLInput = document.getElementById('backendURL');
+        const instructionText = document.getElementById('instructionText');
+        const responseText = document.getElementById('responseText');
+        const intervalSelect = document.getElementById('intervalSelect');
+        const startButton = document.getElementById('startButton');
+        const speakerIcon = document.getElementById('speakerIcon');
+
+        let stream;
+        let processingLoop;
+        let isProcessing = false;
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.onstart = () => {
+                    speakerIcon.classList.remove('hidden');
+                };
+
+                utterance.onend = () => {
+                    speakerIcon.classList.add('hidden');
+                };
+
+                window.speechSynthesis.speak(utterance);
+            } else {
+                console.log("Text-to-speech not supported by this browser.");
+            }
+        }
+
+
+        async function initCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                video.srcObject = stream;
+            } catch (err) {
+                responseText.value = `Error: ${err.message}. Please grant camera permissions and refresh the page.`;
+            }
+        }
+
+        function captureImage() {
+            if (!stream || !video.videoWidth) return null;
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            return canvas.toDataURL('image/jpeg', 0.8);
+        }
+
+        async function sendData() {
+            if (isProcessing) return;
+            isProcessing = true;
+
+            const imageBase64URL = captureImage();
+            if (!imageBase64URL) {
+                responseText.value = "Failed to capture image.";
+                isProcessing = false;
+                return;
+            }
+
+            try {
+                const payload = {
+                    instruction: instructionText.value,
+                    imageBase64URL: imageBase64URL
+                };
+                const response = await fetch(backendURLInput.value, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || `Server error: ${response.status}`);
+                }
+                const data = await response.json();
+                responseText.value = data.response;
+                
+                speakText(data.response);
+
+            } catch (error) {
+                responseText.value = `Error: ${error.message}`;
+                handleStop();
+            } finally {
+                isProcessing = false;
+            }
+        }
+
+        function handleStart() {
+            if (!stream) {
+                alert("Camera not available. Please grant permissions.");
+                return;
+            }
+            startButton.textContent = "Deactivate Vision";
+            startButton.className = 'stop';
+            [instructionText, intervalSelect].forEach(el => el.disabled = true);
+            
+            const intervalMs = parseInt(intervalSelect.value, 10);
+            sendData(); 
+            processingLoop = setInterval(sendData, intervalMs);
+        }
+
+        function handleStop() {
+            if (processingLoop) clearInterval(processingLoop);
+            
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+
+            processingLoop = null;
+            startButton.textContent = "Activate Vision";
+            startButton.className = 'start';
+            [instructionText, intervalSelect].forEach(el => el.disabled = false);
+        }
+
+        startButton.addEventListener('click', () => {
+            (startButton.classList.contains('start')) ? handleStart() : handleStop();
+        });
+
+        window.addEventListener('DOMContentLoaded', initCamera);
+        window.addEventListener('beforeunload', () => {
+            if (stream) stream.getTracks().forEach(track => track.stop());
+            if (processingLoop) clearInterval(processingLoop);
+        });
+    </script>
+</body>
+</html>
