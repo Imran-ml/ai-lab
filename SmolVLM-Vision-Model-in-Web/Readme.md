@@ -18,6 +18,10 @@ Everything is containerized with Docker for a clean, reproducible and high-perfo
 This is a fun project designed to help developers explore the capabilities of running vision models locally.
 
 
+<img width="2035" height="1087" alt="Screenshot 2025-08-31 200552" src="https://github.com/user-attachments/assets/98c25598-fd5b-4e64-8cb5-40e3b74a4842" />
+
+<img width="1988" height="1058" alt="Screenshot 2025-08-31 201346" src="https://github.com/user-attachments/assets/3a3d9971-1f74-46c0-a14c-d79eba831e28" />
+
 ✨ Contributions are welcome! Feel free to fork the repo and submit a pull request if you'd like to collaborate or enhance the project further.
 
 ---
